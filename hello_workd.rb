@@ -34,21 +34,22 @@ use_bpm 90
 # だんだん音が増えていって、最終的にはまたピアノのみになっていく構成
 # 完成には遠い、まだ気持ちよさが足りない気がする
 # 抽象化できそうな場所はのちのち対応していく
+
+# part 1
 live_loop :main do
   
-  live_loop :merodyChannel do
+  live_loop :melodyChannel do
     use_synth :piano
     # 16 * 8 = 128 拍
-    2.times do
-      merodyIntro
+    3.times do
+      melodyLine
     end
 
-    sleep 16
+    sleep 16 # = 1
 
-    5.times do
-      merodyIntro
+    4.times do
+      melodyLine
     end
-    
     stop
   end
 
@@ -57,18 +58,22 @@ live_loop :main do
   #  # 16 * 4 = 128 拍
   #  sleep 16
   #  4.times do
-  #    merodyIntro
+  #    melodyLine
   #  end
   #  
   #  stop
   #end
   
   live_loop :drumChannel do
-    # 16 + 2 * 24 = 64 拍
-    # 8
-    48.times do
+    sleep 16
+    16.times do
       drumIntro
     end
+
+    8.times do
+      mainDrumLine
+    end
+    # 実質 sleep 16
     
     stop
   end
@@ -77,15 +82,72 @@ live_loop :main do
 end
 
 define :drumIntro do
-  #sample :hat_zap, amp: 1
-  sleep 0.5
-  #sample :hat_zap, amp: 1
-  sleep 0.5
-  sample :bd_ada
-  sleep 1
+  with_fx :lpf, cutoff: 60 + tick * 2 do
+    sample :bd_fat, amp: 2
+    sleep 1
+    sample :bd_fat, amp: 2
+    sample :sn_zome, amp: 0.7
+    sleep 1
+  end
 end
 
-define :merodyIntro do
+define :mainDrumLine do
+  # トータル 8 拍
+  2.times do
+    drumline
+  end
+  
+  2.times do
+    drumline
+  end
+end
+
+define :drumline do
+  sample :bd_fat, amp: 3
+  sleep 0.5
+  sample :drum_cymbal_closed, amp: 0.7
+  sleep 0.5
+  sample :bd_fat, amp: 3
+  sample :sn_zome, amp: 0.7
+  sleep 0.5
+  sample :drum_cymbal_closed, amp: 0.7
+  sleep 0.5
+end
+
+define :drumline2 do
+  sample :bd_fat, amp: 3
+  sleep 0.5
+  sample :drum_cymbal_closed, amp: 0.4
+  sleep 0.5
+  sample :bd_fat, amp: 3
+  sample :sn_zome, amp: 0.7
+  sleep 0.5
+  sample :drum_cymbal_closed, amp: 0.4
+  sleep 0.5
+end
+
+define :simpleDrumline do
+  sample :bd_fat, amp: 3
+  sleep 0.5
+  sleep 0.5
+  sample :bd_fat, amp: 3
+  sample :sn_zome, amp: 0.7
+  sleep 0.5
+  sleep 0.5
+end
+
+define :melodyLine do
+  with_fx :compressor, amp: 1.5 do
+    1.times do
+      melodyMain
+    end
+    1.times do
+      melodyContinue
+    end
+  end
+end
+
+define :melodyMain do
   with_fx :compressor, amp: 1.5 do
     # total 1拍
     # 1 小節目 4 拍
@@ -109,7 +171,7 @@ define :merodyIntro do
     sleep 0.5
     play [:c5, :e3, :e2], release: 0.5, amp: 2
     sleep 0.5
-    play [:a4, :e4, :d4, :d3, :d2], release: 2, amp: 2 # 伸ばすところ
+    play [:a4, :e4, :d4, :d3, :d2], release: 3, amp: 2 # 伸ばすところ
     sleep 1.5
     
     # 1 拍
@@ -144,17 +206,18 @@ define :merodyIntro do
     sleep 1
     play [:c5, :g4, :e4, :c3, :c2], release: 2, amp: 2
     sleep 1.5
-    
-    # 1 拍
-    play :g5, release: 0.5
-    sleep 0.3
-    play :a5, release: 0.5
-    sleep 0.2
-    play :c6, release: 1
-    sleep 0.5
   end
 end
 
+define :melodyContinue do
+  # 1 拍
+  play :g5, release: 0.5
+  sleep 0.3
+  play :a5, release: 0.5
+  sleep 0.2
+  play :c6, release: 1
+  sleep 0.5
+end
 
 define :funkyBaseline do
   with_fx :lpf, cutoff: 80 do
@@ -162,34 +225,4 @@ define :funkyBaseline do
       [0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.5, 0.25, 0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.5, 0.25, 0.5, 0.25, 0.5, 0.5],
       release: 0.0 , sustain: 0.3
   end
-end
-
-define :drumline do
-  sample :drum_cymbal_closed, amp: 0.7
-  sample :bd_fat, amp: 4
-  sleep 0.5
-  sample :drum_cymbal_closed, amp: 0.7
-  sleep 0.25
-  sample :bd_fat, amp: 4
-  sleep 0.25
-  sample :drum_cymbal_closed, amp: 0.7
-  # スネアを少しジャストからずらす
-  sleep laid_back
-  sample :sn_zome, amp: 0.7
-  sleep 0.5 - laid_back
-  sample :drum_cymbal_closed, amp: 0.7
-  sleep 0.5
-  sample :drum_cymbal_closed, amp: 0.7
-  sleep 0.5
-  sample :drum_cymbal_closed, amp: 0.7
-  sleep 0.25
-  sample :bd_fat, amp: 4
-  sleep 0.25
-  sample :drum_cymbal_closed, amp: 0.7
-  # スネアを少しジャストからずらす
-  sleep laid_back
-  sample :sn_zome, amp: 0.7
-  sleep 0.5 - laid_back
-  sample :drum_cymbal_closed, amp: 0.7
-  sleep 0.5
 end
