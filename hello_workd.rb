@@ -39,7 +39,7 @@ use_bpm 90
 live_loop :main do
   
   live_loop :melodyChannel do
-    use_synth :piano
+    use_synth :organ_tonewheel
     # 16 * 8 = 128 拍
     3.times do
       melodyLine
@@ -50,30 +50,55 @@ live_loop :main do
     4.times do
       melodyLine
     end
+
+    # 16 * 8 = 128 拍
+    7.times do
+      melodyLineSub
+    end
+    1.times do
+      melodySub
+    end
     stop
   end
 
-  #live_loop :codeChannel do
-  #  use_synth :bass_foundation
-  #  # 16 * 4 = 128 拍
-  #  sleep 16
-  #  4.times do
-  #    melodyLine
-  #  end
-  #  
-  #  stop
-  #end
+  live_loop :synthChannel do
+    sleep 56
+
+    use_synth :tb303
+    14.times do
+      wahSynth
+    end
+
+    sleep 56
+
+    use_synth :tb303
+    14.times do
+      wahSynth
+    end
+    
+    stop
+  end
   
   live_loop :drumChannel do
     sleep 16
+    # 32
     16.times do
       drumIntro
     end
 
+    # 64
     8.times do
       mainDrumLine
     end
-    # 実質 sleep 16
+
+    sleep 16
+
+    # 112
+    14.times do
+      with_fx :compressor, amp: 1.5  do
+        mainDrumLine
+      end
+    end
     
     stop
   end
@@ -81,8 +106,16 @@ live_loop :main do
   stop # ここの stop がないと ZeroTimeLoopError が表示される
 end
 
+# 4 拍
+define :wahSynth do
+  with_fx :ixi_techno, mix: 1, phase: 2 do
+    play_pattern_timed [:e3, :g3, :b2, :d3, :d3], [0.5, 1, 0.5, 1.75, 0.25],
+      attack: 0.0, sustain: 0.05, release: 0.1, width: 0, amp: 1.0
+  end
+end
+
 define :drumIntro do
-  with_fx :lpf, cutoff: 60 + tick * 2 do
+  with_fx :lpf, cutoff: 68 + tick * 2 do
     sample :bd_fat, amp: 2
     sleep 1
     sample :bd_fat, amp: 2
@@ -91,17 +124,14 @@ define :drumIntro do
   end
 end
 
+# 8 拍
 define :mainDrumLine do
-  # トータル 8 拍
-  2.times do
-    drumline
-  end
-  
-  2.times do
+  4.times do
     drumline
   end
 end
 
+# 2 拍
 define :drumline do
   sample :bd_fat, amp: 3
   sleep 0.5
@@ -147,8 +177,19 @@ define :melodyLine do
   end
 end
 
-define :melodyMain do
+define :melodyLineSub do
   with_fx :compressor, amp: 1.5 do
+    1.times do
+      melodySub
+    end
+    1.times do
+      melodyContinueSub
+    end
+  end
+end
+
+define :melodyMain do
+  with_fx :compressor, amp: 1.0 do
     # total 1拍
     # 1 小節目 4 拍
     play [:e6, :a4, :a3], release: 0.8, amp: 2
@@ -219,10 +260,74 @@ define :melodyContinue do
   sleep 0.5
 end
 
-define :funkyBaseline do
-  with_fx :lpf, cutoff: 80 do
-    play_pattern_timed [:e2, :d3, :e3, :e2, :d3, :e2, :d3, :e2, :d3, :e3, :c2, :c3, :c2, :c3, :c2, :b1, :b1, :a2, :b2, :g2],
-      [0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.5, 0.25, 0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.5, 0.25, 0.5, 0.25, 0.5, 0.5],
-      release: 0.0 , sustain: 0.3
+define :melodySub do
+  with_fx :compressor, amp: 1.0 do
+    # total 1拍
+    # 1 小節目 4 拍
+    play [:g6, :c5, :c4], release: 0.8, amp: 2
+    sleep 0.5
+    play [:f6, :b4, :b3], release: 0.8, amp: 2
+    sleep 0.5
+    play [:e6, :g4, :g3], release: 0.5, amp: 2
+    sleep 0.5
+    play [:e6, :c6, :f4, :f3], release: 0.5, amp: 2
+    sleep 1
+    play [:b5, :e4, :e3], release: 0.8, amp: 2
+    sleep 0.5
+    play [:b5, :g5, :c4, :c3], release: 1, amp: 1.5
+    sleep 1
+    
+    # 2 小節目 3 拍
+    play [:b5, :g5, :c4, :c3], release: 0.5, amp: 2
+    sleep 0.5
+    play [:f5, :b3, :b2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:e5, :g3, :g2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:c5, :g4, :f4, :f3, :f2], release: 1, amp: 2 # 伸ばすところ
+    sleep 1.5
+    
+    # 1 拍
+    play :b4, release: 0.5
+    sleep 0.3
+    play :c5, release: 0.5
+    sleep 0.2
+    play :e5, release: 1
+    sleep 0.5
+    
+    # てってってってーのとところ
+    # 3 拍
+    play [:e5, :c5, :a4, :f3, :f2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:e5, :c5, :a4, :f3, :f2], release: 1, amp: 2
+    sleep 1
+    play [:e5, :c5, :a4, :b3, :b2], release: 1, amp: 2
+    sleep 1.5
+    
+    # 1 拍
+    play :b4, release: 0.5
+    sleep 0.3
+    play :c5, release: 0.5
+    sleep 0.2
+    play :e5, release: 1
+    sleep 0.5
+    
+    # 3 拍
+    play [:e5, :c5, :a4, :a3, :a2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:e5, :c5, :a4, :a3, :a2], release: 1, amp: 2
+    sleep 1
+    play [:e5, :b4, :g4, :e3, :e2], release: 1.6, amp: 2
+    sleep 1.5
   end
+end
+
+define :melodyContinueSub do
+  # 1 拍
+  play :b5, release: 0.5
+  sleep 0.3
+  play :c6, release: 0.5
+  sleep 0.2
+  play :e6, release: 1
+  sleep 0.5
 end
