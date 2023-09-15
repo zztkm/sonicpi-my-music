@@ -1,6 +1,6 @@
-# Welcome to Sonic Pi
+# hellowold
+# version 1.1.0
 
-# play_pattern_timed [:c2, :d2, :e2, :d2], [0.5, 0.25, 0.75, 0.5]
 use_bpm 90
 
 # 以下の Scrapbox に調べたことを色々まとめているが、全然活かせていない
@@ -39,7 +39,7 @@ use_bpm 90
 live_loop :main do
   
   live_loop :melodyChannel do
-    use_synth :organ_tonewheel
+    use_synth :fm
     # 16 * 8 = 128 拍
     3.times do
       melodyLine
@@ -53,10 +53,30 @@ live_loop :main do
 
     # 16 * 8 = 128 拍
     7.times do
-      melodyLineSub
+      melodyLine
     end
     1.times do
-      melodySub
+      melodyMain
+    end
+    stop
+  end
+
+  live_loop :baselineChannel do
+    sleep 128 # 前半は休憩
+    use_synth :organ_tonewheel
+    # 16 * 8 = 128 拍
+    8.times do
+      baseline
+    end
+  end
+
+  live_loop :nazoloopChannel do
+    sleep 128 # 前半は休憩
+    28.times do
+      with_fx :compressor, amp: 1.5 do
+        sample :loop_breakbeat, beat_stretch: 4
+        sleep 4
+      end
     end
     stop
   end
@@ -64,14 +84,14 @@ live_loop :main do
   live_loop :synthChannel do
     sleep 56
 
-    use_synth :tb303
+    use_synth :piano
     14.times do
       wahSynth
     end
 
     sleep 56
 
-    use_synth :tb303
+    use_synth :piano
     14.times do
       wahSynth
     end
@@ -135,12 +155,12 @@ end
 define :drumline do
   sample :bd_fat, amp: 3
   sleep 0.5
-  sample :drum_cymbal_closed, amp: 0.7
+  sample :hat_snap, amp: 0.7
   sleep 0.5
   sample :bd_fat, amp: 3
   sample :sn_zome, amp: 0.7
   sleep 0.5
-  sample :drum_cymbal_closed, amp: 0.7
+  sample :hat_snap, amp: 0.7
   sleep 0.5
 end
 
@@ -173,17 +193,6 @@ define :melodyLine do
     end
     1.times do
       melodyContinue
-    end
-  end
-end
-
-define :melodyLineSub do
-  with_fx :compressor, amp: 1.5 do
-    1.times do
-      melodySub
-    end
-    1.times do
-      melodyContinueSub
     end
   end
 end
@@ -330,4 +339,66 @@ define :melodyContinueSub do
   sleep 0.2
   play :e6, release: 1
   sleep 0.5
+end
+
+define :baseline do
+  with_fx :compressor, amp: 1.0 do
+    # total 1拍
+    # 1 小節目 4 拍
+    play [:e6, :a4, :a3], release: 0.8, amp: 2
+    sleep 0.5
+    play [:d6, :g4, :g3], release: 0.8, amp: 2
+    sleep 0.5
+    play [:c6, :e4, :e3], release: 0.5, amp: 2
+    sleep 0.5
+    play [:c6, :a5, :d4, :d3], release: 1.5, amp: 2
+    sleep 1
+    play [:g5, :c4, :c3], release: 0.8, amp: 2
+    sleep 0.5
+    play [:g5, :e5, :a3, :a2], release: 1, amp: 1.5
+    sleep 1
+    
+    # 2 小節目 3 拍
+    play [:g5, :e5, :a3, :a2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:d5, :g3, :g2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:c5, :e3, :e2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:a4, :e4, :d4, :d3, :d2], release: 3, amp: 2 # 伸ばすところ
+    sleep 1.5
+    
+    # 1 拍
+    play :g4, release: 0.5
+    sleep 0.3
+    play :a4, release: 0.5
+    sleep 0.2
+    play :c5, release: 1
+    sleep 0.5
+    
+    # てってってってーのとところ
+    # 3 拍
+    play [:c5, :a4, :f4, :d3, :d2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:c5, :a4, :f4, :d3, :d2], release: 1, amp: 2
+    sleep 1
+    play [:c5, :a4, :f4, :g3, :g2], release: 2, amp: 2
+    sleep 1.5
+    
+    # 1 拍
+    play :g4, release: 0.5
+    sleep 0.3
+    play :a4, release: 0.5
+    sleep 0.2
+    play :c5, release: 1
+    sleep 0.5
+    
+    # 3 拍
+    play [:c5, :a4, :f4, :f3, :f2], release: 0.5, amp: 2
+    sleep 0.5
+    play [:c5, :a4, :f4, :f3, :f2], release: 1, amp: 2
+    sleep 1
+    play [:c5, :g4, :e4, :c3, :c2], release: 2, amp: 2
+    sleep 2.5
+  end
 end
