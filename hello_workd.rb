@@ -1,41 +1,43 @@
-# hellowold
-# version 1.1.0
+=begin
+hellowold
+version 1.1.0
+
+
+以下の Scrapbox に調べたことを色々まとめているが、全然活かせていない
+https://scrapbox.io/zztkm/%E5%88%9D%E3%82%81%E3%81%A6%E3%81%AE%E4%BD%9C%E6%9B%B2
+
+Reference
+[Yesterday - Atmosphere 楽譜]: https://musescore.com/user/947631/scores/459706
+https://www.print-gakufu.com/guide/4003/
+Untitled (2012) <Yesterdayをサンプリングした曲> https://soundcloud.com/kandytownlife/unreleased-demo-2012
+
+構成
+最初はピアノメロディだけからスタート
+ちょっとずつ音が増えていく
+終わりにかけてあとに追加されたものから音が外れていく LIFO（Last In, First Out, 後入れ先出し）
+  スタックみたいだな (https://ja.wikipedia.org/wiki/%E3%82%B9%E3%82%BF%E3%83%83%E3%82%AF)
+↓のような感じにしたい
+(0). ピアノメロディ
+1. ピアノメロディ + ドラム
+2. ドラム
+3. ドラム + ? (ベース？なんか音を足す)
+4. ドラム + ? + ピアノメロディ
+5. ピアノメロディ
+
+extra
+5からさらに盛り上げるのもありかもしれない
+
+
+## NOTE
+- この曲は 16 拍が一区切り
+- だんだん音が増えていって、最終的にはまたピアノのみになっていく構成
+- 完成には遠い、まだ気持ちよさが足りない気がする
+- 抽象化できそうな場所はのちのち対応していく
+
+=end
 
 use_bpm 90
 
-# 以下の Scrapbox に調べたことを色々まとめているが、全然活かせていない
-# https://scrapbox.io/zztkm/%E5%88%9D%E3%82%81%E3%81%A6%E3%81%AE%E4%BD%9C%E6%9B%B2
-
-# Reference
-# [Yesterday - Atmosphere 楽譜]: https://musescore.com/user/947631/scores/459706
-# https://www.print-gakufu.com/guide/4003/
-# Untitled (2012) <Yesterdayをサンプリングした曲> https://soundcloud.com/kandytownlife/unreleased-demo-2012
-
-# 構成
-# 最初はピアノメロディだけからスタート
-# ちょっとずつ音が増えていく
-# 終わりにかけてあとに追加されたものから音が外れていく LIFO（Last In, First Out, 後入れ先出し）
-#   スタックみたいだな (https://ja.wikipedia.org/wiki/%E3%82%B9%E3%82%BF%E3%83%83%E3%82%AF)
-# ↓のような感じにしたい
-# (0). ピアノメロディ
-# 1. ピアノメロディ + ドラム
-# 2. ドラム
-# 3. ドラム + ? (ベース？なんか音を足す)
-# 4. ドラム + ? + ピアノメロディ
-# 5. ピアノメロディ
-
-# extra
-# 5からさらに盛り上げるのもありかもしれない
-
-
-
-# NOTE
-# この曲は 16 拍が一区切り
-# だんだん音が増えていって、最終的にはまたピアノのみになっていく構成
-# 完成には遠い、まだ気持ちよさが足りない気がする
-# 抽象化できそうな場所はのちのち対応していく
-
-# part 1
 live_loop :main do
   
   live_loop :melodyChannel do
